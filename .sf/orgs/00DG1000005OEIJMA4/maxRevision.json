@@ -1,0 +1,102 @@
+{
+    "fileVersion": 0,
+    "serverMaxRevisionCounter": 201,
+    "sourceMembers": {
+        "NamedCredential__Sana_Learn_API": {
+            "memberType": "NamedCredential",
+            "serverRevisionCounter": 43,
+            "lastRetrievedFromServer": null,
+            "isNameObsolete": true
+        },
+        "AuthProvider__SanaLearnAuth": {
+            "memberType": "AuthProvider",
+            "serverRevisionCounter": 119,
+            "lastRetrievedFromServer": null,
+            "isNameObsolete": false
+        },
+        "Profile__Admin": {
+            "memberType": "Profile",
+            "serverRevisionCounter": 200,
+            "lastRetrievedFromServer": null,
+            "isNameObsolete": false
+        },
+        "ApexClass__SanaLearnController": {
+            "memberType": "ApexClass",
+            "serverRevisionCounter": 201,
+            "lastRetrievedFromServer": 201,
+            "isNameObsolete": false
+        },
+        "LightningComponentBundle__sanaAssignments": {
+            "memberType": "LightningComponentBundle",
+            "serverRevisionCounter": 193,
+            "lastRetrievedFromServer": 193,
+            "isNameObsolete": false
+        },
+        "LightningComponentResource__sanaAssignments/sanaAssignments.js-meta.xml": {
+            "memberType": "LightningComponentResource",
+            "serverRevisionCounter": 194,
+            "lastRetrievedFromServer": 194,
+            "isNameObsolete": false
+        },
+        "LightningComponentResource__sanaAssignments/sanaAssignments.html": {
+            "memberType": "LightningComponentResource",
+            "serverRevisionCounter": 195,
+            "lastRetrievedFromServer": 195,
+            "isNameObsolete": false
+        },
+        "LightningComponentResource__sanaAssignments/sanaAssignments.js": {
+            "memberType": "LightningComponentResource",
+            "serverRevisionCounter": 196,
+            "lastRetrievedFromServer": 196,
+            "isNameObsolete": false
+        },
+        "Profile__B2B Reordering Portal Buyer Profile": {
+            "memberType": "Profile",
+            "serverRevisionCounter": 21,
+            "lastRetrievedFromServer": null,
+            "isNameObsolete": false
+        },
+        "FlexiPage__Sana": {
+            "memberType": "FlexiPage",
+            "serverRevisionCounter": 182,
+            "lastRetrievedFromServer": null,
+            "isNameObsolete": false
+        },
+        "CustomTab__Sana": {
+            "memberType": "CustomTab",
+            "serverRevisionCounter": 184,
+            "lastRetrievedFromServer": null,
+            "isNameObsolete": false
+        },
+        "NamedCredential__SanaLearn_API": {
+            "memberType": "NamedCredential",
+            "serverRevisionCounter": 124,
+            "lastRetrievedFromServer": null,
+            "isNameObsolete": false
+        },
+        "AuraDefinitionBundle__SanaConnectionTest": {
+            "memberType": "AuraDefinitionBundle",
+            "serverRevisionCounter": 115,
+            "lastRetrievedFromServer": 115,
+            "isNameObsolete": false
+        },
+        "AuraDefinition__SanaConnectionTest/SanaConnectionTest.cmp": {
+            "memberType": "AuraDefinition",
+            "serverRevisionCounter": 116,
+            "lastRetrievedFromServer": 116,
+            "isNameObsolete": false
+        },
+        "AuraDefinition__SanaConnectionTest/SanaConnectionTestController.js": {
+            "memberType": "AuraDefinition",
+            "serverRevisionCounter": 117,
+            "lastRetrievedFromServer": 117,
+            "isNameObsolete": false
+        },
+        "RemoteSiteSetting__SanaLearn_API": {
+            "memberType": "RemoteSiteSetting",
+            "serverRevisionCounter": 123,
+            "lastRetrievedFromServer": null,
+            "isNameObsolete": false
+        }
+    }
+}

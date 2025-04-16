@@ -1,0 +1,66 @@
+<template>
+    <lightning-card title="Sana Assignments" icon-name="standard:task">
+        <div class="slds-p-around_medium">
+            <lightning-button
+                label="Test Connection"
+                onclick={testAuth}
+                variant="neutral"
+                class="slds-m-bottom_small"
+                disabled={isLoading}
+            ></lightning-button>
+
+            <lightning-button
+                label="Generate New Token"
+                onclick={generateToken}
+                variant="neutral"
+                class="slds-m-bottom_small"
+                disabled={isLoading}
+            ></lightning-button>
+
+            <lightning-input
+                type="email"
+                label="User Email"
+                value={userEmail}
+                onchange={handleUserEmailChange}
+                placeholder="Enter Sana User Email"
+                required
+            ></lightning-input>
+
+            <lightning-button
+                label="Fetch Assignments"
+                onclick={fetchAssignments}
+                variant="brand"
+                class="slds-m-top_small"
+                disabled={isLoading}
+            ></lightning-button>
+
+            <div if:true={isLoading} class="slds-is-relative slds-m-top_medium">
+                <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+            </div>
+
+            <div if:true={error} class="slds-notify slds-notify_alert slds-alert_error slds-m-top_medium">
+                {error}
+            </div>
+
+            <template if:true={assignments.length}>
+                <div class="slds-m-top_medium">
+                    <h3 class="slds-text-heading_small">Assignments</h3>
+                    <ul class="slds-has-dividers_bottom-space">
+                        <template for:each={assignments} for:item="assignment">
+                            <li key={assignment.content.id} class="slds-item">
+                                <div class="slds-p-around_small">
+                                    <div class="slds-text-heading_small">Course: {assignment.courseTitle}</div>
+                                    <div class="slds-text-body_regular">
+                                        <div>Type: {assignment.content.type}</div>
+                                        <div>Assigned: {assignment.assignmentTime}</div>
+                                        <div>Status: {assignment.formattedStatus}</div>
+                                    </div>
+                                </div>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template> 

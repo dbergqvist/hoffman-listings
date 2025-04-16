@@ -1,0 +1,31 @@
+<aura:component controller="SanaLearnController">
+    <aura:attribute name="connectionStatus" type="String" default=""/>
+    <aura:attribute name="isLoading" type="Boolean" default="false"/>
+    
+    <div class="slds-card">
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center">
+                <div class="slds-media__body">
+                    <h2 class="slds-card__header-title">Sana Connection Test</h2>
+                </div>
+            </header>
+        </div>
+        <div class="slds-card__body slds-card__body_inner">
+            <lightning:button 
+                label="Test Connection" 
+                onclick="{!c.testConnection}"
+                disabled="{!v.isLoading}"
+                variant="brand"/>
+            
+            <aura:if isTrue="{!v.isLoading}">
+                <lightning:spinner alternativeText="Testing connection..." size="small"/>
+            </aura:if>
+            
+            <aura:if isTrue="{!not(empty(v.connectionStatus))}">
+                <div class="slds-m-top_medium">
+                    <lightning:formattedText value="{!v.connectionStatus}"/>
+                </div>
+            </aura:if>
+        </div>
+    </div>
+</aura:component> 
