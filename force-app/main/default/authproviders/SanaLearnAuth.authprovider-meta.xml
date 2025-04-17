@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AuthProvider xmlns="http://soap.sforce.com/2006/04/metadata">
+    <authorizeUrl>https://dbergqvist-sandbox.sana.ai/api/token</authorizeUrl>
+    <consumerKey>JmtkYyfU8wA5</consumerKey>
+    <consumerSecret>824f4604cf1b45a3a15205f8f9ae5cd1</consumerSecret>
+    <defaultScopes>read write</defaultScopes>
+    <friendlyName>SanaLearnAuth</friendlyName>
+    <providerType>Custom</providerType>
+    <sendAccessTokenInHeader>true</sendAccessTokenInHeader>
+    <sendClientCredentialsInHeader>true</sendClientCredentialsInHeader>
+    <tokenUrl>https://dbergqvist-sandbox.sana.ai/api/token</tokenUrl>
+    <registrationHandler>SanaLearnAuthRegistrationHandler</registrationHandler>
+    <executionUser>005G10000092PQPIA2</executionUser>
+</AuthProvider>

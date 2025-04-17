@@ -1,0 +1,20 @@
+<template>
+    <lightning-card title="Sana API Connection Test">
+        <div class="slds-m-around_medium">
+            <lightning-button 
+                label="Test Connection" 
+                onclick={handleTestConnection}
+                variant="brand"
+                disabled={isLoading}>
+            </lightning-button>
+            
+            <div if:true={isLoading} class="slds-p-top_small">
+                <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+            </div>
+            
+            <div if:true={connectionResult} class="slds-p-top_medium">
+                <p class={resultClass}>{connectionResult}</p>
+            </div>
+        </div>
+    </lightning-card>
+</template>

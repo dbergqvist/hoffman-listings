@@ -1,33 +1,14 @@
 <template>
     <lightning-card title="Sana Assignments" icon-name="standard:task">
         <div class="slds-p-around_medium">
+            <!-- Email input field removed as we're using a hardcoded email -->
+            
+            <div class="slds-var-m-bottom_small">
+                <p>Showing assignments for: <b>{userEmail}</b></p>
+            </div>
+            
             <lightning-button
-                label="Test Connection"
-                onclick={testAuth}
-                variant="neutral"
-                class="slds-m-bottom_small"
-                disabled={isLoading}
-            ></lightning-button>
-
-            <lightning-button
-                label="Generate New Token"
-                onclick={generateToken}
-                variant="neutral"
-                class="slds-m-bottom_small"
-                disabled={isLoading}
-            ></lightning-button>
-
-            <lightning-input
-                type="email"
-                label="User Email"
-                value={userEmail}
-                onchange={handleUserEmailChange}
-                placeholder="Enter Sana User Email"
-                required
-            ></lightning-input>
-
-            <lightning-button
-                label="Fetch Assignments"
+                label="Refresh Assignments"
                 onclick={fetchAssignments}
                 variant="brand"
                 class="slds-m-top_small"
@@ -47,11 +28,13 @@
                     <h3 class="slds-text-heading_small">Assignments</h3>
                     <ul class="slds-has-dividers_bottom-space">
                         <template for:each={assignments} for:item="assignment">
-                            <li key={assignment.content.id} class="slds-item">
+                            <li key={assignment.id} class="slds-item">
                                 <div class="slds-p-around_small">
                                     <div class="slds-text-heading_small">Course: {assignment.courseTitle}</div>
                                     <div class="slds-text-body_regular">
-                                        <div>Type: {assignment.content.type}</div>
+                                        <template if:true={assignment.content}>
+                                            <div>Type: {assignment.content.type}</div>
+                                        </template>
                                         <div>Assigned: {assignment.assignmentTime}</div>
                                         <div>Status: {assignment.formattedStatus}</div>
                                     </div>

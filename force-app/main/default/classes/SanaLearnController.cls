@@ -40,16 +40,28 @@ public with sharing class SanaLearnController {
 
     @AuraEnabled
     public static Map<String, Object> getUserAssignments(String userEmail) {
+        Map<String, Object> response = new Map<String, Object>();
+        
         try {
             if (String.isBlank(userEmail)) {
                 System.debug('Error: userEmail is null or empty');
-                throw new AuraHandledException('User email is required');
+                response.put('error', 'User email is required');
+                return response;
             }
-
-            // Use the new token
-            String workingToken = 'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmYWI4NjI1ZS05MmEwLTQ5OWQtYjVmYi1mNWRlMGE0NzNjZGIiLCJpc3MiOiJkYmVyZ3F2aXN0LXNhbmRib3guc2FuYS5haSIsImNpZCI6IkptdGtZeWZVOHdBNSIsInNjcCI6WyJyZWFkIiwid3JpdGUiXSwiZXhwIjoxNzQ0ODA0MjE1fQ.7ghUThnkarpwj_rYoHMI5T1haCsnwwm2FC7GG18K8UF8EB2wiRqP2HLTb8bBuWESmki_Yi0k5BfR_D9OhUL-kQ';
             
-            // First, let's get the user ID from the email
+            // First, generate a token for API authentication
+            String tokenResponse = generateNewToken();
+            System.debug('Token response: ' + tokenResponse);
+            
+            if (!tokenResponse.startsWith('New token generated successfully: ')) {
+                response.put('error', 'Failed to generate token: ' + tokenResponse);
+                return response;
+            }
+            
+            String accessToken = tokenResponse.substringAfter('New token generated successfully: ');
+            System.debug('Extracted access token');
+            
+            // Now, let's get the user ID from the email
             String usersEndpoint = 'https://dbergqvist-sandbox.sana.ai/api/v0/users?email=' + EncodingUtil.urlEncode(userEmail, 'UTF-8');
             System.debug('=== GET USER BY EMAIL REQUEST ===');
             System.debug('Endpoint: ' + usersEndpoint);
@@ -59,28 +71,47 @@ public with sharing class SanaLearnController {
             usersRequest.setEndpoint(usersEndpoint);
             usersRequest.setMethod('GET');
             usersRequest.setHeader('Content-Type', 'application/json');
-            usersRequest.setHeader('Authorization', 'Bearer ' + workingToken);
+            usersRequest.setHeader('Authorization', 'Bearer ' + accessToken);
             
             System.debug('=== USERS REQUEST DETAILS ===');
             System.debug('Method: ' + usersRequest.getMethod());
             System.debug('Headers: ' + usersRequest.getHeader('Content-Type'));
-            System.debug('Auth Header: Bearer ' + workingToken.substring(0, 20) + '...');
             
-            HttpResponse usersResponse = http.send(usersRequest);
+            HttpResponse usersResponse;
+            try {
+                usersResponse = http.send(usersRequest);
+            } catch (Exception e) {
+                response.put('error', 'HTTP Request failed: ' + e.getMessage());
+                return response;
+            }
+            
             System.debug('=== USERS RESPONSE DETAILS ===');
             System.debug('Status Code: ' + usersResponse.getStatusCode());
             System.debug('Response Body: ' + usersResponse.getBody());
             
             if (usersResponse.getStatusCode() != 200) {
-                throw new AuraHandledException('Failed to fetch user: ' + usersResponse.getBody());
+                response.put('error', 'Failed to fetch user: ' + usersResponse.getBody());
+                return response;
             }
             
             // Parse the users response to get the user ID
             Map<String, Object> usersResult = (Map<String, Object>) JSON.deserializeUntyped(usersResponse.getBody());
-            List<Object> users = (List<Object>)usersResult.get('data');
+            Object dataObj = usersResult.get('data');
+            List<Object> users;
+            
+            // Handle different possible data structures
+            if (dataObj instanceof List<Object>) {
+                users = (List<Object>)dataObj;
+            } else if (dataObj instanceof Map<String, Object>) {
+                // Handle case where data might be a single object rather than an array
+                users = new List<Object>{ dataObj };
+            } else {
+                users = new List<Object>();
+            }
             
             if (users == null || users.isEmpty()) {
-                throw new AuraHandledException('No user found with email: ' + userEmail);
+                response.put('error', 'No user found with email: ' + userEmail);
+                return response;
             }
             
             // Get the user's ID
@@ -98,19 +129,23 @@ public with sharing class SanaLearnController {
             assignmentsRequest.setEndpoint(assignmentsEndpoint);
             assignmentsRequest.setMethod('GET');
             assignmentsRequest.setHeader('Content-Type', 'application/json');
-            assignmentsRequest.setHeader('Authorization', 'Bearer ' + workingToken);
+            assignmentsRequest.setHeader('Authorization', 'Bearer ' + accessToken);
             
             System.debug('=== ASSIGNMENTS REQUEST DETAILS ===');
             System.debug('Method: ' + assignmentsRequest.getMethod());
             System.debug('Headers: ' + assignmentsRequest.getHeader('Content-Type'));
-            System.debug('Auth Header: Bearer ' + workingToken.substring(0, 20) + '...');
             
-            HttpResponse assignmentsResponse = http.send(assignmentsRequest);
+            HttpResponse assignmentsResponse;
+            try {
+                assignmentsResponse = http.send(assignmentsRequest);
+            } catch (Exception e) {
+                response.put('error', 'HTTP Request failed: ' + e.getMessage());
+                return response;
+            }
+            
             System.debug('=== ASSIGNMENTS RESPONSE DETAILS ===');
             System.debug('Status Code: ' + assignmentsResponse.getStatusCode());
             System.debug('Response Body: ' + assignmentsResponse.getBody());
-            
-            Map<String, Object> response = new Map<String, Object>();
             
             if (assignmentsResponse.getStatusCode() == 200) {
                 String responseBody = assignmentsResponse.getBody();
@@ -143,7 +178,7 @@ public with sharing class SanaLearnController {
                                     if (contentMap.containsKey('id')) {
                                         String courseId = (String)contentMap.get('id');
                                         System.debug('Course ID: ' + courseId);
-                                        String courseTitle = getCourseTitle(courseId, workingToken);
+                                        String courseTitle = getCourseTitle(courseId, accessToken);
                                         assignment.put('courseTitle', courseTitle);
                                     }
                                 }
@@ -164,7 +199,7 @@ public with sharing class SanaLearnController {
                                         if (contentMap.containsKey('id')) {
                                             String courseId = (String)contentMap.get('id');
                                             System.debug('Course ID: ' + courseId);
-                                            String courseTitle = getCourseTitle(courseId, workingToken);
+                                            String courseTitle = getCourseTitle(courseId, accessToken);
                                             assignment.put('courseTitle', courseTitle);
                                         }
                                     }
@@ -179,7 +214,8 @@ public with sharing class SanaLearnController {
                     }
                 } catch (JSONException je) {
                     System.debug('JSON parsing error: ' + je.getMessage());
-                    throw new AuraHandledException('Invalid JSON response: ' + je.getMessage());
+                    response.put('error', 'Invalid JSON response: ' + je.getMessage());
+                    return response;
                 }
             } else {
                 String errorMessage;
@@ -198,145 +234,59 @@ public with sharing class SanaLearnController {
                                  '. Response: ' + assignmentsResponse.getBody();
                 }
                 System.debug('Error: ' + errorMessage);
-                throw new AuraHandledException(errorMessage);
+                response.put('error', errorMessage);
+                return response;
             }
             
             return response;
-        } catch (AuraHandledException e) {
-            System.debug('AuraHandledException: ' + e.getMessage());
-            throw e;
         } catch (Exception e) {
             System.debug('Unexpected Exception: ' + e.getMessage());
             System.debug('Stack trace: ' + e.getStackTraceString());
-            throw new AuraHandledException('Unexpected error: ' + e.getMessage());
+            response.put('error', 'Unexpected error: ' + e.getMessage());
+            return response;
         }
     }
 
     @AuraEnabled
     public static String testConnection() {
         try {
-            // Use the new token
-            String workingToken = 'eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmYWI4NjI1ZS05MmEwLTQ5OWQtYjVmYi1mNWRlMGE0NzNjZGIiLCJpc3MiOiJkYmVyZ3F2aXN0LXNhbmRib3guc2FuYS5haSIsImNpZCI6IkptdGtZeWZVOHdBNSIsInNjcCI6WyJyZWFkIiwid3JpdGUiXSwiZXhwIjoxNzQ0ODA0MjE1fQ.7ghUThnkarpwj_rYoHMI5T1haCsnwwm2FC7GG18K8UF8EB2wiRqP2HLTb8bBuWESmki_Yi0k5BfR_D9OhUL-kQ';
+            System.debug('=== STARTING TEST CONNECTION ===');
             
-            String apiEndpoint = 'https://dbergqvist-sandbox.sana.ai/api/v0/users?limit=1';
-            System.debug('Testing API with known working token');
+            // Set to false to use the real API
+            Boolean useMockResponse = false;
+            if (useMockResponse) {
+                System.debug('Using mock response for testing');
+                return 'Connection successful! This is a mock response for testing. The component is working correctly.';
+            }
+            
+            // First, generate a new token
+            System.debug('Attempting to generate new token...');
+            String tokenResponse = generateNewToken();
+            System.debug('Token response: ' + tokenResponse);
+            
+            if (!tokenResponse.startsWith('New token generated successfully: ')) {
+                // Don't throw exception, just return error message
+                return 'Failed to generate token: ' + tokenResponse;
+            }
+            
+            String accessToken = tokenResponse.substringAfter('New token generated successfully: ');
+            System.debug('Extracted access token');
+            
+            // Now use the token to test the connection with a simple endpoint
+            String endpoint = 'https://dbergqvist-sandbox.sana.ai/api/v0/users?limit=1';
+            System.debug('Testing endpoint: ' + endpoint);
             
             Http http = new Http();
             HttpRequest request = new HttpRequest();
-            request.setEndpoint(apiEndpoint);
+            request.setEndpoint(endpoint);
             request.setMethod('GET');
             request.setHeader('Content-Type', 'application/json');
-            request.setHeader('Authorization', 'Bearer ' + workingToken);
+            request.setHeader('Authorization', 'Bearer ' + accessToken);
             
-            System.debug('=== DIRECT API REQUEST WITH WORKING TOKEN ===');
-            System.debug('Endpoint: ' + apiEndpoint);
-            System.debug('Authorization Header: Bearer ' + workingToken.substring(0, 20) + '...');
-            
-            HttpResponse response = http.send(request);
-            System.debug('=== DIRECT API RESPONSE ===');
-            System.debug('Status Code: ' + response.getStatusCode());
-            System.debug('Response Body: ' + response.getBody());
-            
-            if (response.getStatusCode() == 200) {
-                return 'Connection successful with direct token! Response: ' + response.getBody();
-            }
-            
-            // If direct token works but Named Credential doesn't, we know it's a Named Credential issue
-            String ncEndpoint = 'callout:SanaLearn_API/api/v0/users?limit=1';
-            System.debug('Testing Named Credential endpoint: ' + ncEndpoint);
-            
-            HttpRequest ncRequest = new HttpRequest();
-            ncRequest.setEndpoint(ncEndpoint);
-            ncRequest.setMethod('GET');
-            ncRequest.setHeader('Content-Type', 'application/json');
-            
-            System.debug('=== NAMED CREDENTIAL REQUEST ===');
-            System.debug('Method: ' + ncRequest.getMethod());
-            System.debug('Endpoint: ' + ncRequest.getEndpoint());
-            
-            HttpResponse ncResponse = http.send(ncRequest);
-            System.debug('=== NAMED CREDENTIAL RESPONSE ===');
-            System.debug('Status Code: ' + ncResponse.getStatusCode());
-            System.debug('Response Body: ' + ncResponse.getBody());
-            
-            if (ncResponse.getStatusCode() == 200) {
-                return 'Connection successful with Named Credential! Response: ' + ncResponse.getBody();
-            } else if (ncResponse.getStatusCode() == 401) {
-                String errorMessage = 'Authentication failed (401 Unauthorized). Please verify:\n\n' +
-                                    'Named Credential Settings:\n' +
-                                    '1. URL: Should be https://dbergqvist-sandbox.sana.ai\n' +
-                                    '2. Authentication Protocol: OAuth 2.0\n' +
-                                    '3. Identity Type: Named Principal\n' +
-                                    '4. All checkboxes should be checked\n\n' +
-                                    'Auth Provider Settings:\n' +
-                                    '1. Token Endpoint URL: Should be https://dbergqvist-sandbox.sana.ai/api/token\n' +
-                                    '2. Authorize Endpoint URL: Should be https://dbergqvist-sandbox.sana.ai/api/token\n' +
-                                    '3. Client ID: JmtkYyfU8wA5\n' +
-                                    '4. Client Secret: 824f4604cf1b45a3a15205f8f9ae5cd1\n' +
-                                    '5. Send Client Credentials in Header: Should be UNCHECKED\n' +
-                                    '6. Default Scopes: Should be "read,write" (with comma)\n\n';
-                
-                if (String.isNotBlank(ncResponse.getBody())) {
-                    errorMessage += 'API Response: ' + ncResponse.getBody() + '\n\n';
-                }
-                
-                // Add Named Credential debug info
-                try {
-                    NamedCredential nc = [SELECT Id, DeveloperName, Endpoint, AuthProviderId FROM NamedCredential WHERE DeveloperName = 'SanaLearn_API' LIMIT 1];
-                    AuthProvider ap = [SELECT Id, ConsumerKey FROM AuthProvider WHERE Id = :nc.AuthProviderId LIMIT 1];
-                    errorMessage += 'Named Credential Info:\n';
-                    errorMessage += 'Developer Name: ' + nc.DeveloperName + '\n';
-                    errorMessage += 'Endpoint: ' + nc.Endpoint + '\n';
-                    errorMessage += 'Auth Provider ID: ' + nc.AuthProviderId + '\n';
-                    errorMessage += 'Client ID: ' + ap.ConsumerKey + '\n\n';
-                } catch (Exception e) {
-                    errorMessage += 'Could not retrieve Named Credential info: ' + e.getMessage() + '\n\n';
-                }
-                
-                errorMessage += 'Please also check:\n' +
-                              '1. The Named Credential URL is exactly: https://dbergqvist-sandbox.sana.ai\n' +
-                              '2. The Auth Provider endpoints are correct\n' +
-                              '3. The Client ID and Secret are correct\n' +
-                              '4. Your Salesforce org has network access to the API domain\n' +
-                              '5. Try to authenticate the Named Credential manually in Setup';
-                
-                return errorMessage;
-            } else {
-                return 'Connection failed with status ' + ncResponse.getStatusCode() + '. Response: ' + ncResponse.getBody();
-            }
-        } catch (Exception e) {
-            System.debug('Error in testConnection: ' + e.getMessage());
-            System.debug('Stack trace: ' + e.getStackTraceString());
-            throw new AuraHandledException('Connection test failed: ' + e.getMessage());
-        }
-    }
-
-    @AuraEnabled
-    public static String generateNewToken() {
-        try {
-            // Use the Named Credential endpoint
-            String tokenEndpoint = 'callout:SanaLearn_API/api/token';
-            
-            Http http = new Http();
-            HttpRequest request = new HttpRequest();
-            request.setEndpoint(tokenEndpoint);
-            request.setMethod('POST');
-            request.setHeader('Content-Type', 'application/x-www-form-urlencoded');
-            request.setHeader('Accept', 'application/json');
-            
-            // The Named Credential should handle the authentication
-            // We just need to specify the grant type
-            String requestBody = 'grant_type=client_credentials';
-            request.setBody(requestBody);
-            
-            System.debug('=== TOKEN REQUEST ===');
-            System.debug('Endpoint: ' + tokenEndpoint);
+            System.debug('=== TEST CONNECTION REQUEST ===');
             System.debug('Method: ' + request.getMethod());
-            System.debug('Headers: ' + request.getHeader('Content-Type'));
-            System.debug('Request Body: ' + requestBody);
-            
-            // Add timeout to prevent hanging
-            request.setTimeout(120000); // 2 minutes timeout
+            System.debug('Endpoint: ' + request.getEndpoint());
+            System.debug('Content-Type: ' + request.getHeader('Content-Type'));
             
             HttpResponse response;
             try {
@@ -344,50 +294,142 @@ public with sharing class SanaLearnController {
             } catch (Exception e) {
                 System.debug('HTTP Request Exception: ' + e.getMessage());
                 System.debug('Stack trace: ' + e.getStackTraceString());
-                throw new AuraHandledException('HTTP Request failed: ' + e.getMessage());
+                return 'HTTP Request failed: ' + e.getMessage();
             }
             
+            System.debug('=== TEST CONNECTION RESPONSE ===');
+            System.debug('Status Code: ' + response.getStatusCode());
+            System.debug('Response Body: ' + response.getBody());
+            
+            if (response.getStatusCode() == 200) {
+                return 'Connection successful! API response received.';
+            } else {
+                String errorMessage = 'Connection failed with status ' + response.getStatusCode();
+                if (String.isNotBlank(response.getBody())) {
+                    try {
+                        Map<String, Object> errorResponse = (Map<String, Object>) JSON.deserializeUntyped(response.getBody());
+                        System.debug('Error response: ' + JSON.serializePretty(errorResponse));
+                        if (errorResponse.containsKey('error')) {
+                            errorMessage += ' - Error: ' + errorResponse.get('error');
+                        }
+                        if (errorResponse.containsKey('error_description')) {
+                            errorMessage += ' - Description: ' + errorResponse.get('error_description');
+                        }
+                    } catch (Exception e) {
+                        System.debug('Error parsing error response: ' + e.getMessage());
+                        errorMessage += ' - Raw Response: ' + response.getBody();
+                    }
+                }
+                return errorMessage;
+            }
+        } catch (Exception e) {
+            System.debug('Error in testConnection: ' + e.getMessage());
+            System.debug('Stack trace: ' + e.getStackTraceString());
+            // Don't throw exception, just return error message
+            return 'Connection test failed: ' + e.getMessage();
+        }
+    }
+
+    @AuraEnabled
+    public static String generateNewToken() {
+        try {
+            System.debug('=== STARTING TOKEN GENERATION ===');
+            
+            // For debugging only - return a test token to see if the rest of the flow works
+            Boolean useTestToken = false; // Set to true to bypass actual API call
+            if (useTestToken) {
+                System.debug('Using test token for debugging');
+                return 'New token generated successfully: TEST_TOKEN_12345';
+            }
+            
+            String tokenEndpoint = 'https://dbergqvist-sandbox.sana.ai/api/token';
+            System.debug('Token endpoint: ' + tokenEndpoint);
+            
+            // Sana API credentials
+            String clientId = 'JmtkYyfU8wA5';
+            String clientSecret = '824f4604cf1b45a3a15205f8f9ae5cd1';
+            
+            // Prepare the HTTP request
+            Http http = new Http();
+            HttpRequest request = new HttpRequest();
+            request.setEndpoint(tokenEndpoint);
+            request.setMethod('POST');
+            request.setHeader('Content-Type', 'application/x-www-form-urlencoded');
+            request.setHeader('Accept', 'application/json');
+            
+            // Set the request body with all required parameters as shown in the documentation
+            String requestBody = 'grant_type=client_credentials&client_id=' + EncodingUtil.urlEncode(clientId, 'UTF-8') + 
+                              '&client_secret=' + EncodingUtil.urlEncode(clientSecret, 'UTF-8') + 
+                              '&scope=read,write';
+            request.setBody(requestBody);
+            
+            // Set timeout and log request details
+            request.setTimeout(30000); // 30 seconds timeout
+            System.debug('=== TOKEN REQUEST DETAILS ===');
+            System.debug('Endpoint: ' + request.getEndpoint());
+            System.debug('Method: ' + request.getMethod());
+            System.debug('Headers: Content-Type=' + request.getHeader('Content-Type') + 
+                         ', Accept=' + request.getHeader('Accept'));
+            System.debug('Using Basic Authentication with client ID: ' + clientId);
+            
+            // Send the HTTP request
+            HttpResponse response;
+            try {
+                response = http.send(request);
+            } catch (System.CalloutException ce) {
+                // Handle callout exceptions separately (often due to Salesforce config issues)
+                System.debug('CalloutException: ' + ce.getMessage());
+                if (ce.getMessage().contains('Unauthorized endpoint')) {
+                    return 'Error: Unauthorized endpoint. Please verify Remote Site Settings for: ' + tokenEndpoint;
+                } else {
+                    return 'Callout error: ' + ce.getMessage();
+                }
+            }
+            
+            // Process the response
             System.debug('=== TOKEN RESPONSE ===');
             System.debug('Status Code: ' + response.getStatusCode());
             System.debug('Response Body: ' + response.getBody());
             
             if (response.getStatusCode() == 200) {
-                try {
-                    Map<String, Object> result = (Map<String, Object>) JSON.deserializeUntyped(response.getBody());
-                    if (result.containsKey('access_token')) {
-                        String accessToken = (String)result.get('access_token');
+                // Success - parse the response and extract the token
+                Map<String, Object> result = (Map<String, Object>) JSON.deserializeUntyped(response.getBody());
+                
+                if (result.containsKey('data')) {
+                    Map<String, Object> data = (Map<String, Object>)result.get('data');
+                    if (data.containsKey('accessToken')) {
+                        String accessToken = (String)data.get('accessToken');
+                        System.debug('Successfully obtained access token');
                         return 'New token generated successfully: ' + accessToken;
                     } else {
-                        throw new AuraHandledException('Response does not contain access_token: ' + response.getBody());
+                        return 'Response data does not contain accessToken';
                     }
-                } catch (Exception e) {
-                    System.debug('JSON Parsing Exception: ' + e.getMessage());
-                    throw new AuraHandledException('Failed to parse token response: ' + e.getMessage());
+                } else {
+                    return 'Response does not contain data element';
                 }
             } else {
-                String errorMessage = 'Failed to generate token. Status: ' + response.getStatusCode();
+                // Error - parse the error response
+                String errorMessage = 'Token generation failed with status ' + response.getStatusCode();
                 if (String.isNotBlank(response.getBody())) {
                     try {
                         Map<String, Object> errorResponse = (Map<String, Object>) JSON.deserializeUntyped(response.getBody());
                         if (errorResponse.containsKey('error')) {
-                            errorMessage += '\nError: ' + errorResponse.get('error');
+                            errorMessage += ' - Error: ' + errorResponse.get('error');
                         }
                         if (errorResponse.containsKey('error_description')) {
-                            errorMessage += '\nDescription: ' + errorResponse.get('error_description');
+                            errorMessage += ' - Description: ' + errorResponse.get('error_description');
                         }
                     } catch (Exception e) {
-                        errorMessage += '\nResponse: ' + response.getBody();
+                        errorMessage += ' - Response: ' + response.getBody();
                     }
                 }
-                throw new AuraHandledException(errorMessage);
+                return errorMessage;
             }
-        } catch (AuraHandledException e) {
-            System.debug('AuraHandledException: ' + e.getMessage());
-            throw e;
         } catch (Exception e) {
-            System.debug('Unexpected Exception: ' + e.getMessage());
+            // Log and return error message
+            System.debug('Error in generateNewToken: ' + e.getMessage());
             System.debug('Stack trace: ' + e.getStackTraceString());
-            throw new AuraHandledException('Unexpected error: ' + e.getMessage());
+            return 'Token generation failed: ' + e.getMessage();
         }
     }
 } 
