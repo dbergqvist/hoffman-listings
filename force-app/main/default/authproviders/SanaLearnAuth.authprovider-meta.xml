@@ -5,7 +5,7 @@
     <consumerSecret>824f4604cf1b45a3a15205f8f9ae5cd1</consumerSecret>
     <defaultScopes>read write</defaultScopes>
     <friendlyName>SanaLearnAuth</friendlyName>
-    <providerType>Custom</providerType>
+    <providerType>OpenIdConnect</providerType>
     <sendAccessTokenInHeader>true</sendAccessTokenInHeader>
     <sendClientCredentialsInHeader>true</sendClientCredentialsInHeader>
     <tokenUrl>https://dbergqvist-sandbox.sana.ai/api/token</tokenUrl>
