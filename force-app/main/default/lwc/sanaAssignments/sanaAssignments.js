@@ -129,4 +129,4 @@ export default class SanaAssignments extends LightningElement {
         });
         this.dispatchEvent(event);
     }
-} 
+}

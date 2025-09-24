@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <AuthProvider xmlns="http://soap.sforce.com/2006/04/metadata">
-    <authorizeUrl>https://fable.sana.ai/api/token</authorizeUrl>
+    <authorizeUrl>https://api.example.com/token</authorizeUrl>
     <consumerKey>EXAMPLE_CLIENT_ID</consumerKey>
     <consumerSecret>EXAMPLE_CLIENT_SECRET</consumerSecret>
     <defaultScopes>read write</defaultScopes>
@@ -8,7 +8,7 @@
     <providerType>OpenIdConnect</providerType>
     <sendAccessTokenInHeader>true</sendAccessTokenInHeader>
     <sendClientCredentialsInHeader>true</sendClientCredentialsInHeader>
-    <tokenUrl>https://fable.sana.ai/api/token</tokenUrl>
+    <tokenUrl>https://api.example.com/token</tokenUrl>
     <registrationHandler>SanaLearnAuthRegistrationHandler</registrationHandler>
     <executionUser>EXAMPLE_USER_ID</executionUser>
 </AuthProvider>

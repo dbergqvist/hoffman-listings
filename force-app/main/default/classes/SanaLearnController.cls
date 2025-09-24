@@ -3,7 +3,7 @@ public with sharing class SanaLearnController {
         try {
             System.debug('=== COURSE TITLE REQUEST ===');
             System.debug('Course ID: ' + courseId);
-            String courseEndpoint = 'https://fable.sana.ai/api/v0/courses/' + courseId;
+            String courseEndpoint = 'https://api.example.com/v0/courses/' + courseId;
             System.debug('Endpoint: ' + courseEndpoint);
             
             Http http = new Http();
@@ -62,7 +62,7 @@ public with sharing class SanaLearnController {
             System.debug('Extracted access token');
             
             // Now, let's get the user ID from the email
-            String usersEndpoint = 'https://fable.sana.ai/api/v0/users?email=' + EncodingUtil.urlEncode(userEmail, 'UTF-8');
+            String usersEndpoint = 'https://api.example.com/v0/users?email=' + EncodingUtil.urlEncode(userEmail, 'UTF-8');
             System.debug('=== GET USER BY EMAIL REQUEST ===');
             System.debug('Endpoint: ' + usersEndpoint);
             
@@ -120,7 +120,7 @@ public with sharing class SanaLearnController {
             System.debug('Found user ID: ' + userId);
             
             // Now use this user ID to fetch assignments
-            String assignmentsEndpoint = 'https://fable.sana.ai/api/v0/users/' + userId + '/assignments';
+            String assignmentsEndpoint = 'https://api.example.com/v0/users/' + userId + '/assignments';
             System.debug('=== GET ASSIGNMENTS REQUEST ===');
             System.debug('Endpoint: ' + assignmentsEndpoint);
             System.debug('User ID: ' + userId);
@@ -273,7 +273,7 @@ public with sharing class SanaLearnController {
             System.debug('Extracted access token');
             
             // Now use the token to test the connection with a simple endpoint
-            String endpoint = 'https://fable.sana.ai/api/v0/users?limit=1';
+            String endpoint = 'https://api.example.com/v0/users?limit=1';
             System.debug('Testing endpoint: ' + endpoint);
             
             Http http = new Http();
@@ -348,7 +348,7 @@ public with sharing class SanaLearnController {
                 return 'New token generated successfully: TEST_TOKEN_12345';
             }
             
-            String tokenEndpoint = 'https://fable.sana.ai/api/token';
+            String tokenEndpoint = 'https://api.example.com/token';
             System.debug('Token endpoint: ' + tokenEndpoint);
             
             // Sana API credentials

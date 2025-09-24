@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlexiPage xmlns="http://soap.sforce.com/2006/04/metadata">
+    <masterLabel>Sana Analytics</masterLabel>
+    <template>
+        <name>flexipage:defaultAppHomeTemplate</name>
+    </template>
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentName>c:sanaDashboardSync</componentName>
+                <identifier>sanaDashboardSync1</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>main</name>
+        <type>Region</type>
+    </flexiPageRegions>
+    <type>AppPage</type>
+</FlexiPage> 

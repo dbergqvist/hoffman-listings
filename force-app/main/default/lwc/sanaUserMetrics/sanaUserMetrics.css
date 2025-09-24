@@ -1,0 +1,69 @@
+.chart-container {
+    position: relative;
+    height: 400px;
+    width: 100%;
+    padding: 1rem;
+}
+
+.chart-container canvas {
+    max-height: 100%;
+    max-width: 100%;
+}
+
+.slds-box {
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.10);
+}
+
+.slds-text-heading_large {
+    font-weight: 700;
+    font-size: 2rem;
+}
+
+lightning-datatable {
+    --slds-c-datatable-cell-buffer: 0.75rem;
+}
+
+.debug-section {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* Fallback Chart Styles */
+.fallback-chart-container {
+    padding: 1rem;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.chart-bar-container {
+    margin-bottom: 1rem;
+    padding: 0.5rem 0;
+}
+
+.chart-bar-label {
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+    font-size: 0.875rem;
+    color: #444;
+}
+
+.chart-bar-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.chart-bar {
+    height: 24px;
+    background: linear-gradient(90deg, #1f77b4, #4a9eff);
+    border-radius: 4px;
+    min-width: 2px;
+    transition: width 0.3s ease;
+}
+
+.chart-bar-value {
+    font-weight: bold;
+    color: #1f77b4;
+    min-width: 30px;
+    text-align: right;
+} 

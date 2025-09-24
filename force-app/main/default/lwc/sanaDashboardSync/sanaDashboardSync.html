@@ -1,0 +1,43 @@
+<template>
+    <lightning-card title="Sana Dashboard Data Sync" icon-name="standard:data_mapping">
+        <div class="slds-p-around_medium">
+            
+            <!-- Sync Info -->
+            <div class="slds-m-bottom_medium">
+                <p class="slds-text-body_regular">{lastSyncInfo}</p>
+            </div>
+
+            <!-- Sync Button -->
+            <div class="slds-m-bottom_medium">
+                <lightning-button
+                    variant="brand"
+                    label="Sync Sana Data"
+                    title="Sync latest user completion data from Sana for dashboards"
+                    onclick={handleSyncData}
+                    disabled={isLoading}>
+                </lightning-button>
+            </div>
+
+            <!-- Loading Spinner -->
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Syncing data..." size="medium"></lightning-spinner>
+                <p class="slds-text-align_center slds-text-body_small slds-m-top_small">
+                    Syncing data from Sana... This may take up to 1 minute.
+                </p>
+            </template>
+
+            <!-- Instructions -->
+            <div class="slds-box slds-theme_shade slds-m-top_medium">
+                <h3 class="slds-text-heading_small slds-m-bottom_small">Dashboard Setup Instructions:</h3>
+                <ol class="slds-list_ordered">
+                    <li class="slds-m-bottom_x-small">Click "Sync Sana Data" to populate the custom objects</li>
+                    <li class="slds-m-bottom_x-small">Go to Reports → New Report → "Sana User Completions"</li>
+                    <li class="slds-m-bottom_x-small">Create reports with charts and summaries</li>
+                    <li class="slds-m-bottom_x-small">Add reports to a new Dashboard</li>
+                    <li class="slds-m-bottom_x-small">Schedule regular syncs to keep data current</li>
+                </ol>
+            </div>
+
+        </div>
+    </lightning-card>
+</template> 

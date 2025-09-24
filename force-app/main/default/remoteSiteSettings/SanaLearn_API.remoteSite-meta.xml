@@ -3,5 +3,5 @@
     <description>Sana Learn API endpoint</description>
     <disableProtocolSecurity>false</disableProtocolSecurity>
     <isActive>true</isActive>
-    <url>https://dbergqvist-sandbox.sana.ai</url>
+    <url>https://api.example.com</url>
 </RemoteSiteSetting>

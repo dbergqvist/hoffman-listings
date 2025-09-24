@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>Sana Analytics Cache</label>
+    <pluralLabel>Sana Analytics Caches</pluralLabel>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Stores cached analytics data from Sana Learn API</description>
+    <nameField>
+        <type>Text</type>
+        <label>Cache Name</label>
+    </nameField>
+    <sharingModel>ReadWrite</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject> 

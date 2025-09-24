@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <columns>
+        <field>CUST_NAME</field>
+    </columns>
+    <columns>
+        <field>Sana_User_Completion__c.First_Name__c</field>
+    </columns>
+    <columns>
+        <field>Sana_User_Completion__c.Last_Name__c</field>
+    </columns>
+    <columns>
+        <field>Sana_User_Completion__c.User_Display_Name__c</field>
+    </columns>
+    <columns>
+        <field>Sana_User_Completion__c.User_Email__c</field>
+    </columns>
+    <columns>
+        <field>Sana_User_Completion__c.Courses_Completed__c</field>
+    </columns>
+    <columns>
+        <field>Sana_User_Completion__c.Last_Sync_Date__c</field>
+    </columns>
+    <description>Top course completers from Sana Learn platform</description>
+    <format>Tabular</format>
+    <name>Top Course Completers</name>
+    <params>
+        <name>co</name>
+        <value>1</value>
+    </params>
+    <params>
+        <name>c0</name>
+        <value>1</value>
+    </params>
+    <reportType>CustomEntity$Sana_User_Completion__c</reportType>
+    <scope>organization</scope>
+    <showDetails>true</showDetails>
+    <sortColumn>Sana_User_Completion__c.Courses_Completed__c</sortColumn>
+    <sortOrder>Desc</sortOrder>
+</Report> 
