@@ -3,7 +3,7 @@ public with sharing class SanaLearnController {
         try {
             System.debug('=== COURSE TITLE REQUEST ===');
             System.debug('Course ID: ' + courseId);
-            String courseEndpoint = 'https://dbergqvist-sandbox.sana.ai/api/v0/courses/' + courseId;
+            String courseEndpoint = 'https://fable.sana.ai/api/v0/courses/' + courseId;
             System.debug('Endpoint: ' + courseEndpoint);
             
             Http http = new Http();
@@ -62,7 +62,7 @@ public with sharing class SanaLearnController {
             System.debug('Extracted access token');
             
             // Now, let's get the user ID from the email
-            String usersEndpoint = 'https://dbergqvist-sandbox.sana.ai/api/v0/users?email=' + EncodingUtil.urlEncode(userEmail, 'UTF-8');
+            String usersEndpoint = 'https://fable.sana.ai/api/v0/users?email=' + EncodingUtil.urlEncode(userEmail, 'UTF-8');
             System.debug('=== GET USER BY EMAIL REQUEST ===');
             System.debug('Endpoint: ' + usersEndpoint);
             
@@ -120,7 +120,7 @@ public with sharing class SanaLearnController {
             System.debug('Found user ID: ' + userId);
             
             // Now use this user ID to fetch assignments
-            String assignmentsEndpoint = 'https://dbergqvist-sandbox.sana.ai/api/v0/users/' + userId + '/assignments';
+            String assignmentsEndpoint = 'https://fable.sana.ai/api/v0/users/' + userId + '/assignments';
             System.debug('=== GET ASSIGNMENTS REQUEST ===');
             System.debug('Endpoint: ' + assignmentsEndpoint);
             System.debug('User ID: ' + userId);
@@ -273,7 +273,7 @@ public with sharing class SanaLearnController {
             System.debug('Extracted access token');
             
             // Now use the token to test the connection with a simple endpoint
-            String endpoint = 'https://dbergqvist-sandbox.sana.ai/api/v0/users?limit=1';
+            String endpoint = 'https://fable.sana.ai/api/v0/users?limit=1';
             System.debug('Testing endpoint: ' + endpoint);
             
             Http http = new Http();
@@ -332,8 +332,14 @@ public with sharing class SanaLearnController {
 
     @AuraEnabled
     public static String generateNewToken() {
+        return generateNewTokenWithScope('read');
+    }
+    
+    @AuraEnabled
+    public static String generateNewTokenWithScope(String scope) {
         try {
             System.debug('=== STARTING TOKEN GENERATION ===');
+            System.debug('Requested scope: ' + scope);
             
             // For debugging only - return a test token to see if the rest of the flow works
             Boolean useTestToken = false; // Set to true to bypass actual API call
@@ -342,12 +348,12 @@ public with sharing class SanaLearnController {
                 return 'New token generated successfully: TEST_TOKEN_12345';
             }
             
-            String tokenEndpoint = 'https://dbergqvist-sandbox.sana.ai/api/token';
+            String tokenEndpoint = 'https://fable.sana.ai/api/token';
             System.debug('Token endpoint: ' + tokenEndpoint);
             
             // Sana API credentials
-            String clientId = 'JmtkYyfU8wA5';
-            String clientSecret = '824f4604cf1b45a3a15205f8f9ae5cd1';
+            String clientId = 'EXAMPLE_CLIENT_ID';
+            String clientSecret = 'EXAMPLE_CLIENT_SECRET';
             
             // Prepare the HTTP request
             Http http = new Http();
@@ -360,7 +366,7 @@ public with sharing class SanaLearnController {
             // Set the request body with all required parameters as shown in the documentation
             String requestBody = 'grant_type=client_credentials&client_id=' + EncodingUtil.urlEncode(clientId, 'UTF-8') + 
                               '&client_secret=' + EncodingUtil.urlEncode(clientSecret, 'UTF-8') + 
-                              '&scope=read,write';
+                              '&scope=' + EncodingUtil.urlEncode(scope, 'UTF-8');
             request.setBody(requestBody);
             
             // Set timeout and log request details
