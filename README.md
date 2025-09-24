@@ -2,7 +2,7 @@
 
 A comprehensive **Salesforce integration with the Sana Learn API** for analytics reporting and user completion tracking. This solution provides real-time learning analytics data within Salesforce's reporting and dashboard ecosystem.
 
-## 🔐 Authentication & Token Management
+## Authentication & Token Management
 
 ### Core Authentication Components
 
@@ -16,7 +16,7 @@ A comprehensive **Salesforce integration with the Sana Learn API** for analytics
 2. Handles token refresh automatically when tokens expire
 3. Supports multiple environments through metadata configuration
 
-## 📊 Analytics Data Pipeline
+## Analytics Data Pipeline
 
 ### Available Analytics Reports from Sana
 
@@ -38,7 +38,7 @@ A comprehensive **Salesforce integration with the Sana Learn API** for analytics
 - Easy to add new analytics endpoints by extending the existing pattern
 - Standardized error handling and data processing
 
-## 🚀 Data Processing Architecture
+## Data Processing Architecture
 
 ### Asynchronous Job Pattern
 
@@ -53,7 +53,7 @@ A comprehensive **Salesforce integration with the Sana Learn API** for analytics
 - **Smart Polling**: Configurable delays and retry limits to respect API limits
 - **Batch Processing**: Handles large datasets efficiently
 
-## 📈 Salesforce Integration Options
+## Salesforce Integration Options
 
 ### Lightning Web Components (LWC)
 
@@ -74,7 +74,7 @@ A comprehensive **Salesforce integration with the Sana Learn API** for analytics
 - **App Launcher**: Searchable components accessible from anywhere
 - **Navigation Integration**: Can be added to app navigation menus
 
-## 🔄 Data Synchronization Features
+## Data Synchronization Features
 
 ### Intelligent Data Management
 
@@ -89,7 +89,7 @@ A comprehensive **Salesforce integration with the Sana Learn API** for analytics
 - **Graceful Degradation**: System continues working even if individual records fail
 - **User Feedback**: Clear error messages displayed in UI
 
-## 🏗️ Technical Architecture
+## Technical Architecture
 
 ### Core Classes
 
@@ -114,7 +114,7 @@ A comprehensive **Salesforce integration with the Sana Learn API** for analytics
 | `sanaDashboardSync` | Manual data synchronization interface |
 | `sanaConnectionTestLWC` | API connection testing tool |
 
-## 🎯 Business Value
+## Business Value
 
 ### For Learning & Development Teams
 
@@ -128,7 +128,7 @@ A comprehensive **Salesforce integration with the Sana Learn API** for analytics
 - **Scalable Architecture**: Can handle growing user bases and data volumes
 - **Secure Integration**: Uses Salesforce security model and encrypted credentials
 
-## ⚙️ Setup & Configuration
+## Setup & Configuration
 
 ### Prerequisites
 
@@ -163,7 +163,7 @@ A comprehensive **Salesforce integration with the Sana Learn API** for analytics
 | Remote Sites | Setup → Remote Site Settings | Allow API calls to Sana |
 | Page Assignments | Lightning App Builder | Add components to pages |
 
-## 🔧 Usage Instructions
+## Usage Instructions
 
 ### Manual Data Sync
 
@@ -195,7 +195,7 @@ A comprehensive **Salesforce integration with the Sana Learn API** for analytics
 | `/api/analytics/user_completions_analytics` | User completion data | Daily recommended |
 | `/oauth/token` | Authentication token refresh | As needed |
 
-## 🔍 Monitoring & Troubleshooting
+## Monitoring & Troubleshooting
 
 ### Built-in Monitoring
 
@@ -218,7 +218,7 @@ A comprehensive **Salesforce integration with the Sana Learn API** for analytics
 - **Setup → Jobs**: Monitor async operations
 - **Custom Objects**: Verify data population in `Sana_User_Completion__c`
 
-## 🚀 Future Enhancements
+## Future Enhancements
 
 ### Planned Features
 
@@ -236,7 +236,7 @@ The codebase is designed for easy extension:
 - **UI Components**: Create additional Lightning Web Components
 - **Reporting**: Build custom reports and dashboards
 
-## 📝 Support & Documentation
+## Support & Documentation
 
 ### Resources
 
